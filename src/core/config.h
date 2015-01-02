@@ -10,11 +10,11 @@
 
 #include "common/common_types.h"
 
-namespace Citra {
+namespace Core {
 
 class Config {
-    INIReader* glfw_config;
-    std::string glfw_config_loc;
+    INIReader* core_config;
+    std::string core_config_loc;
 
     bool LoadINI(INIReader* config, const char* location, const std::string& default_contents="", bool retry=true);
     void ReadValues();

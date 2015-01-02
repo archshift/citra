@@ -8,6 +8,8 @@
 
 #include "common/common_types.h"
 
+namespace Citra_Qt {
+
 class Config {
     QSettings* qt_config;
     std::string qt_config_loc;
@@ -21,3 +23,5 @@ public:
     void Reload();
     void Save();
 };
+
+}

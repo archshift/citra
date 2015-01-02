@@ -4,12 +4,33 @@
 
 #include <GLFW/glfw3.h>
 
-#include "citra/default_ini.h"
+#include "citra/config.h"
 #include "common/file_util.h"
 #include "core/settings.h"
 #include "core/core.h"
 
-#include "config.h"
+namespace Citra {
+
+static const char* default_config_file = R"(
+[Controls]
+pad_start =
+pad_select =
+pad_home =
+pad_dup =
+pad_ddown =
+pad_dleft =
+pad_dright =
+pad_a =
+pad_b =
+pad_x =
+pad_y =
+pad_r =
+pad_l =
+pad_sup =
+pad_sdown =
+pad_sleft =
+pad_sright =
+)";
 
 Config::Config() {
     // TODO: Don't hardcode the path; let the frontend decide where to put the config files.
@@ -55,24 +76,15 @@ void Config::ReadValues() {
     Settings::values.pad_sdown_key  = glfw_config->GetInteger("Controls", "pad_sdown",  GLFW_KEY_DOWN);
     Settings::values.pad_sleft_key  = glfw_config->GetInteger("Controls", "pad_sleft",  GLFW_KEY_LEFT);
     Settings::values.pad_sright_key = glfw_config->GetInteger("Controls", "pad_sright", GLFW_KEY_RIGHT);
-
-    // Core
-    Settings::values.cpu_core = glfw_config->GetInteger("Core", "cpu_core", Core::CPU_Interpreter);
-    Settings::values.gpu_refresh_rate = glfw_config->GetInteger("Core", "gpu_refresh_rate", 30);
-    Settings::values.frame_skip = glfw_config->GetInteger("Core", "frame_skip", 0);
-
-    // Data Storage
-    Settings::values.use_virtual_sd = glfw_config->GetBoolean("Data Storage", "use_virtual_sd", true);
-
-    // Miscellaneous
-    Settings::values.log_filter = glfw_config->Get("Miscellaneous", "log_filter", "*:Info");
 }
 
 void Config::Reload() {
-    LoadINI(glfw_config, glfw_config_loc.c_str(), DefaultINI::glfw_config_file);
+    LoadINI(glfw_config, glfw_config_loc.c_str(), default_config_file);
     ReadValues();
 }
 
 Config::~Config() {
     delete glfw_config;
+}
+
 }

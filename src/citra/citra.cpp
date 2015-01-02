@@ -12,6 +12,7 @@
 
 #include "core/settings.h"
 #include "core/system.h"
+#include "core/config.h"
 #include "core/core.h"
 #include "core/loader/loader.h"
 
@@ -33,7 +34,8 @@ int __cdecl main(int argc, char **argv) {
         return -1;
     }
 
-    Config config;
+    Citra::Config frontend_config;
+    Core::Config core_config;
     log_filter.ParseFilterString(Settings::values.log_filter);
 
     std::string boot_filename = argv[1];

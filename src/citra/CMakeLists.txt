@@ -7,7 +7,6 @@ set(SRCS
 set(HEADERS
             emu_window/emu_window_glfw.h
             config.h
-            default_ini.h
             resource.h
             )
 

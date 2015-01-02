@@ -37,6 +37,7 @@
 
 #include "core/settings.h"
 #include "core/system.h"
+#include "core/config.h"
 #include "core/core.h"
 #include "core/loader/loader.h"
 #include "core/arm/disassembler/load_symbol_map.h"
@@ -48,7 +49,8 @@ GMainWindow::GMainWindow()
 {
     Pica::g_debug_context = Pica::DebugContext::Construct();
 
-    Config config;
+    Citra_Qt::Config frontend_config;
+    Core::Config core_config;
 
     ui.setupUi(this);
     statusBar()->hide();
