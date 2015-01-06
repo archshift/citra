@@ -28,17 +28,21 @@ int __cdecl main(int argc, char **argv) {
         logging_thread.join();
     });
 
-    if (argc < 2) {
+    Config config;
+    log_filter.ParseFilterString(Settings::values.log_filter);
+
+    std::string boot_filename;
+    if (argc >= 2) {
+        // TODO: Better argument parsing
+        boot_filename = argv[1];
+    } else if (!Settings::values.autoload_game_path.empty()) {
+        boot_filename = Settings::values.autoload_game_path;
+    } else {
         LOG_CRITICAL(Frontend, "Failed to load ROM: No ROM specified");
         return -1;
     }
 
-    Config config;
-    log_filter.ParseFilterString(Settings::values.log_filter);
-
-    std::string boot_filename = argv[1];
     EmuWindow_GLFW* emu_window = new EmuWindow_GLFW;
-
     System::Init(emu_window);
 
     Loader::ResultStatus load_result = Loader::LoadFile(boot_filename);

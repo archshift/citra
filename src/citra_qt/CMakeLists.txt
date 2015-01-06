@@ -17,6 +17,7 @@ set(SRCS
             bootmanager.cpp
             hotkeys.cpp
             main.cpp
+            settings.cpp
             citra-qt.rc
             )
 
@@ -37,6 +38,7 @@ set(HEADERS
             bootmanager.h
             hotkeys.h
             main.h
+            settings.h
             version.h
             )
 

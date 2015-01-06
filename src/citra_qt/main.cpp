@@ -41,6 +41,7 @@
 #include "core/loader/loader.h"
 #include "core/arm/disassembler/load_symbol_map.h"
 #include "citra_qt/config.h"
+#include "citra_qt/settings.h"
 
 #include "version.h"
 
@@ -143,7 +144,14 @@ GMainWindow::GMainWindow()
 
     QStringList args = QApplication::arguments();
     if (args.length() >= 2) {
+        // TODO: Better argument parsing
         BootGame(args[1].toStdString());
+    } else if (!Settings::values.autoload_game_path.empty()) {
+        BootGame(Settings::values.autoload_game_path);
+    }
+
+    if (!Settings::qt_values.autoload_map_path.empty()) {
+        LoadSymbolMap(Settings::qt_values.autoload_map_path);
     }
 }
 
@@ -174,7 +182,9 @@ void GMainWindow::BootGame(std::string filename)
     render_window->GetEmuThread().start();
 
     render_window->show();
-    OnStartGame();
+
+    if (Settings::qt_values.autoplay_game)
+        OnStartGame();
 }
 
 void GMainWindow::OnMenuLoadFile()
@@ -259,7 +269,6 @@ void GMainWindow::closeEvent(QCloseEvent* event)
     settings.setValue("state", saveState());
     settings.setValue("geometryRenderWindow", render_window->saveGeometry());
     settings.setValue("singleWindowMode", ui.action_Single_Window_Mode->isChecked());
-    settings.setValue("firstStart", false);
     SaveHotkeys(settings);
 
     render_window->close();

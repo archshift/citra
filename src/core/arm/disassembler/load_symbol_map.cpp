@@ -23,7 +23,9 @@ void LoadSymbolMap(std::string filename) {
     while (std::getline(infile, line)) {
         std::istringstream iss(line);
         if (!(iss >> address_str >> size >> function_name)) {
-            break; // Error parsing
+            Symbols::Clear();
+            LOG_ERROR(Frontend, "Could not load symbol map.");
+            break; // Error while parsing
         }
         u32 address = std::stoul(address_str, nullptr, 16);
 

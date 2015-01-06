@@ -27,15 +27,34 @@ pad_sleft =
 pad_sright =
 
 [Core]
-cpu_core = ## 0: Interpreter (default), 1: OldInterpreter (may work better, soon to be deprecated)
-gpu_refresh_rate = ## 30 (default)
-frame_skip = ## 0: No frameskip (default), 1 : 2x frameskip, 2 : 4x frameskip, etc.
+# The CPU core to be enabled
+# 0 (default): Interpreter, 1: Old interpreter (soon to be deprecated)
+cpu_core =
+
+# The refresh rate for the GPU
+# Defaults to 30
+gpu_refresh_rate =
+
+# The applied frameskip amount. Must be a power of two.
+# 0 (default): No frameskip, 1: x2 frameskip, 2: x4 frameskip, 3: x8 frameskip, etc.
+frame_skip =
+
 
 [Data Storage]
+# Whether to create a virtual SD card.
+# 1 (default): Yes, 0: No
 use_virtual_sd =
 
+
 [Miscellaneous]
-log_filter = *:Info  ## Examples: *:Debug Kernel.SVC:Trace Service.*:Critical
+# A filter which removes logs below a certain logging level.
+# Examples: *:Debug Kernel.SVC:Trace Service.*:Critical
+log_filter = *:Info
+
+
+# Path for to a game file to be autoloaded by Citra.
+# Leave blank for no autoloading. Overridden by path passed as a console argument.
+autoload_game_path =
 )";
 
 }

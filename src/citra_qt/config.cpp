@@ -9,7 +9,8 @@
 #include "core/core.h"
 #include "common/file_util.h"
 
-#include "config.h"
+#include "citra_qt/config.h"
+#include "citra_qt/settings.h"
 
 Config::Config() {
 
@@ -54,6 +55,9 @@ void Config::ReadValues() {
 
     qt_config->beginGroup("Miscellaneous");
     Settings::values.log_filter = qt_config->value("log_filter", "*:Info").toString().toStdString();
+    Settings::qt_values.autoplay_game     = qt_config->value("autoplay_game", true).toBool();
+    Settings::values.autoload_game_path   = qt_config->value("autoload_game_path", "").toString().toStdString();
+    Settings::qt_values.autoload_map_path = qt_config->value("autoload_map_path", "").toString().toStdString();
     qt_config->endGroup();
 }
 
@@ -90,6 +94,9 @@ void Config::SaveValues() {
 
     qt_config->beginGroup("Miscellaneous");
     qt_config->setValue("log_filter", QString::fromStdString(Settings::values.log_filter));
+    qt_config->setValue("autoplay_game", Settings::qt_values.autoplay_game);
+    qt_config->setValue("autoload_game_path", QString::fromStdString(Settings::values.autoload_game_path));
+    qt_config->setValue("autoload_map_path", QString::fromStdString(Settings::qt_values.autoload_map_path));
     qt_config->endGroup();
 }
 

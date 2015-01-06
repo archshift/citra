@@ -36,6 +36,8 @@ struct Values {
     // Data Storage
     bool use_virtual_sd;
 
+    // Misc
+    std::string autoload_game_path;
     std::string log_filter;
 } extern values;
 

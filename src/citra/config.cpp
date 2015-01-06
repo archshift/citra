@@ -66,6 +66,7 @@ void Config::ReadValues() {
 
     // Miscellaneous
     Settings::values.log_filter = glfw_config->Get("Miscellaneous", "log_filter", "*:Info");
+    Settings::values.autoload_game_path = glfw_config->Get("Miscellaneous", "autoload_game_path", "");
 }
 
 void Config::Reload() {
