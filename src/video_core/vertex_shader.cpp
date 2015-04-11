@@ -6,11 +6,12 @@
 
 #include <boost/range/algorithm.hpp>
 
-#include <common/file_util.h>
+#include "common/file_util.h"
+#include "common/math_util.h"
 
-#include <core/mem_map.h>
+#include "core/mem_map.h"
 
-#include <nihstro/shader_bytecode.h>
+#include "nihstro/shader_bytecode.h"
 
 
 #include "pica.h"
@@ -217,6 +218,17 @@ static void ProcessShaderCode(VertexShaderState& state) {
                 break;
             }
 
+            case OpCode::Id::EX2:
+            {
+                for (int i = 0; i < 4; ++i) {
+                    if (!swizzle.DestComponentEnabled(i))
+                        continue;
+
+                    dest[i] = float24::FromFloat32(std::exp2(src1[i].ToFloat32()));
+                }
+                break;
+            }
+
             case OpCode::Id::MUL:
             {
                 for (int i = 0; i < 4; ++i) {
@@ -228,6 +240,15 @@ static void ProcessShaderCode(VertexShaderState& state) {
 
                 break;
             }
+
+            case OpCode::Id::FLR:
+                for (int i = 0; i < 4; ++i) {
+                    if (!swizzle.DestComponentEnabled(i))
+                        continue;
+
+                    dest[i] = float24::FromFloat32(std::floor(src1[i].ToFloat32()));
+                }
+                break;
 
             case OpCode::Id::MAX:
                 for (int i = 0; i < 4; ++i) {
