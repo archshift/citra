@@ -76,6 +76,7 @@ set(SRCS
             hle/service/nwm_uds.cpp
             hle/service/pm_app.cpp
             hle/service/ptm/ptm.cpp
+            hle/service/ptm/ptm_gets.cpp
             hle/service/ptm/ptm_play.cpp
             hle/service/ptm/ptm_u.cpp
             hle/service/ptm/ptm_sysm.cpp
@@ -187,6 +188,7 @@ set(HEADERS
             hle/service/nwm_uds.h
             hle/service/pm_app.h
             hle/service/ptm/ptm.h
+            hle/service/ptm/ptm_gets.h
             hle/service/ptm/ptm_play.h
             hle/service/ptm/ptm_u.h
             hle/service/ptm/ptm_sysm.h
