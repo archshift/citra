@@ -50,7 +50,7 @@ struct HttpContext {
 
     //--- Ongoing request management
     RequestState state;               //< API-exposed current state of the HTTP request
-    std::unique_ptr<std::thread> req_thread;
+    std::unique_ptr<std::thread> request_thread;
     bool cancel_request;              //< True if the request's thread should be canceled ASAP
 
     //--- Request data

@@ -52,8 +52,8 @@ static void CloseContext(Service::Interface* self) {
     }
 
     map_it->second->cancel_request = true;
-    if (map_it->second->req_thread != nullptr)
-        map_it->second->req_thread->join();
+    if (map_it->second->request_thread != nullptr)
+        map_it->second->request_thread->join();
 
     context_map.erase(handle);
 
@@ -126,7 +126,7 @@ static void BeginRequest(Service::Interface* self) {
     HttpContext* context = map_it->second.get();
     std::lock_guard<std::mutex> lock(context->mutex);
 
-    context->req_thread = Common::make_unique<std::thread>(MakeRequest, context);
+    context->request_thread = Common::make_unique<std::thread>(MakeRequest, context);
     context->state = RequestState::IN_PROGRESS;
 
     cmd_buff[1] = RESULT_SUCCESS.raw;

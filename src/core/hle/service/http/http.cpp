@@ -145,8 +145,8 @@ void ClearInstance() {
     }
 
     for (auto& pair : context_map) {
-        if (pair.second->req_thread != nullptr)
-            pair.second->req_thread->join();
+        if (pair.second->request_thread != nullptr)
+            pair.second->request_thread->join();
     }
 
     context_map.clear();
