@@ -43,10 +43,10 @@ static CURLcode SetConnectionType(CURL* connection, RequestType type) {
     case RequestType::GET:
         return curl_easy_setopt(connection, CURLOPT_HTTPGET, 1);
     case RequestType::POST:
-    case RequestType::POST_:
+    case RequestType::POST_ALT:
         return curl_easy_setopt(connection, CURLOPT_POST, 1);
     case RequestType::PUT:
-    case RequestType::PUT_:
+    case RequestType::PUT_ALT:
         return curl_easy_setopt(connection, CURLOPT_UPLOAD, 1);
     case RequestType::DELETE:
         break; // TODO

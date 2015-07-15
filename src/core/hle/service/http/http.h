@@ -22,14 +22,14 @@ typedef u32 ContextHandle;
 
 /// HTTP operation that will be performed by the request (API-exposed).
 enum class RequestType : u32 {
-    NONE   = 0,
-    GET    = 1,
-    POST   = 2,
-    HEAD   = 3,
-    PUT    = 4,
-    DELETE = 5,
-    POST_  = 6,
-    PUT_   = 7
+    NONE     = 0,
+    GET      = 1,
+    POST     = 2,
+    HEAD     = 3,
+    PUT      = 4,
+    DELETE   = 5,
+    POST_ALT = 6,
+    PUT_ALT  = 7
 };
 
 /// Current state of the HTTP request (API-exposed).
