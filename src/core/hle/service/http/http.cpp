@@ -70,10 +70,10 @@ void MakeRequest(HttpContext* context) {
         res = curl_easy_setopt(connection, CURLOPT_HTTPHEADER, context->request_headers);
     }
 
-    std::vector<u8> response_hdrs, response_data;
+    std::vector<u8> response_headers, response_data;
     res = curl_easy_setopt(connection, CURLOPT_HEADERFUNCTION, BufWriter);
     res = curl_easy_setopt(connection, CURLOPT_WRITEFUNCTION, BufWriter);
-    res = curl_easy_setopt(connection, CURLOPT_HEADERDATA, &response_hdrs);
+    res = curl_easy_setopt(connection, CURLOPT_HEADERDATA, &response_headers);
     res = curl_easy_setopt(connection, CURLOPT_WRITEDATA, &response_data);
 
     curl_multi_add_handle(manager, connection);
@@ -113,7 +113,7 @@ void MakeRequest(HttpContext* context) {
     {
         std::lock_guard<std::mutex> lock(context->mutex);
 
-        context->response_hdrs = std::move(response_hdrs);
+        context->response_headers = std::move(response_headers);
         context->response_data = std::move(response_data);
         res = curl_easy_getinfo(connection, CURLINFO_RESPONSE_CODE, &context->response_code);
         res = curl_easy_getinfo(connection, CURLINFO_SIZE_DOWNLOAD, &context->downloaded_size);

@@ -59,7 +59,7 @@ struct HttpContext {
     curl_slist* request_headers;      //< Buffer for request headers to be sent to the server.
 
     //--- Response data
-    std::vector<u8> response_hdrs;    //< Buffer for response headers returned by the server.
+    std::vector<u8> response_headers; //< Buffer for response headers returned by the server.
     std::vector<u8> response_data;    //< Buffer for response body returned by the server.
     long response_code;               //< The three-digit HTTP response code returned by the server.
     double content_length;            //< The total size in bytes that will be downloaded this request (cURL returns a double for this).
