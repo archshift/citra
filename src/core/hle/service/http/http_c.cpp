@@ -89,7 +89,7 @@ static void GetRequestState(Service::Interface* self) {
     cmd_buff[1] = RESULT_SUCCESS.raw;
 
     std::lock_guard<std::mutex> lock(map_it->second->mutex);
-    cmd_buff[2] = map_it->second->state;
+    cmd_buff[2] = (u32)map_it->second->state;
 }
 
 static void GetDownloadSizeState(Service::Interface* self) {
@@ -127,7 +127,7 @@ static void BeginRequest(Service::Interface* self) {
     std::lock_guard<std::mutex> lock(context->mutex);
 
     context->req_thread = Common::make_unique<std::thread>(MakeRequest, context);
-    context->state = REQUEST_STATE_IN_PROGRESS;
+    context->state = RequestState::IN_PROGRESS;
 
     cmd_buff[1] = RESULT_SUCCESS.raw;
 }
@@ -200,7 +200,7 @@ static void GetResponseStatusCode(Service::Interface* self) {
     // TODO: Verify behavior
     while (true) {
         std::lock_guard<std::mutex> lock(map_it->second->mutex);
-        if (map_it->second->state == REQUEST_STATE_READY)
+        if (map_it->second->state == RequestState::READY)
             break;
     }
 

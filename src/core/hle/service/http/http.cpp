@@ -25,9 +25,9 @@ static int BufWriter(u8 *data, size_t size, size_t nmemb, std::vector<u8>* out_b
 }
 
 HttpContext::HttpContext() {
-    state = REQUEST_STATE_NOT_STARTED;
+    state = RequestState::NOT_STARTED;
     cancel_request = false;
-    req_type = REQUEST_TYPE_NONE;
+    req_type = RequestType::NONE;
     request_hdrs = nullptr;
     response_code = 0;
     content_length = 0.0;
@@ -40,17 +40,17 @@ HttpContext::~HttpContext() {
 
 static CURLcode SetConnectionType(CURL* connection, RequestType type) {
     switch (type) {
-    case REQUEST_TYPE_GET:
+    case RequestType::GET:
         return curl_easy_setopt(connection, CURLOPT_HTTPGET, 1);
-    case REQUEST_TYPE_POST:
-    case REQUEST_TYPE_POST_:
+    case RequestType::POST:
+    case RequestType::POST_:
         return curl_easy_setopt(connection, CURLOPT_POST, 1);
-    case REQUEST_TYPE_PUT:
-    case REQUEST_TYPE_PUT_:
+    case RequestType::PUT:
+    case RequestType::PUT_:
         return curl_easy_setopt(connection, CURLOPT_UPLOAD, 1);
-    case REQUEST_TYPE_DELETE:
+    case RequestType::DELETE:
         break; // TODO
-    case REQUEST_TYPE_HEAD:
+    case RequestType::HEAD:
         return curl_easy_setopt(connection, CURLOPT_NOBODY, 1);
     }
 }
@@ -119,7 +119,7 @@ void MakeRequest(HttpContext* context) {
         res = curl_easy_getinfo(connection, CURLINFO_SIZE_DOWNLOAD, &context->downloaded_size);
         res = curl_easy_getinfo(connection, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &context->content_length);
 
-        context->state = REQUEST_STATE_READY;
+        context->state = RequestState::READY;
     }
 
     curl_multi_remove_handle(manager, connection);

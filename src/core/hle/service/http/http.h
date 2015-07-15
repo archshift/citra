@@ -21,23 +21,23 @@ namespace HTTP {
 typedef u32 ContextHandle;
 
 /// HTTP operation that will be performed by the request (API-exposed).
-enum RequestType : u32 {
-    REQUEST_TYPE_NONE   = 0,
-    REQUEST_TYPE_GET    = 1,
-    REQUEST_TYPE_POST   = 2,
-    REQUEST_TYPE_HEAD   = 3,
-    REQUEST_TYPE_PUT    = 4,
-    REQUEST_TYPE_DELETE = 5,
-    REQUEST_TYPE_POST_  = 6,
-    REQUEST_TYPE_PUT_   = 7
+enum class RequestType : u32 {
+    NONE   = 0,
+    GET    = 1,
+    POST   = 2,
+    HEAD   = 3,
+    PUT    = 4,
+    DELETE = 5,
+    POST_  = 6,
+    PUT_   = 7
 };
 
 /// Current state of the HTTP request (API-exposed).
-enum RequestState : u32 {
-    REQUEST_STATE_NOT_STARTED = 1,
-    REQUEST_STATE_IN_PROGRESS = 5,
-    REQUEST_STATE_READY = 8,
-    REQUEST_STATE_TIMEOUT = 10,
+enum class RequestState : u32 {
+    NOT_STARTED = 1,
+    IN_PROGRESS = 5,
+    READY       = 8,
+    TIMEOUT     = 10,
 };
 
 /** A helper struct that contains all the required information for a HTTP request.
