@@ -28,7 +28,7 @@ static void CreateContext(Service::Interface* self) {
     RequestType req_type = static_cast<RequestType>(cmd_buff[2]);
     char* url_ptr = reinterpret_cast<char*>(Memory::GetPointer(cmd_buff[4]));
 
-    LOG_DEBUG(Service, "request url=%s req_type=%u", url_ptr, req_type);
+    LOG_DEBUG(Service_HTTP, "request url=%s req_type=%u", url_ptr, req_type);
     auto context = Common::make_unique<HttpContext>();
 
     context->req_type = req_type;
