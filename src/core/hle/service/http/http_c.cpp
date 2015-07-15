@@ -25,13 +25,13 @@ static void CreateContext(Service::Interface* self) {
     u32* cmd_buff = Kernel::GetCommandBuffer();
 
     u32 url_len = cmd_buff[1];
-    RequestType req_type = static_cast<RequestType>(cmd_buff[2]);
+    RequestType request_type = static_cast<RequestType>(cmd_buff[2]);
     char* url_ptr = reinterpret_cast<char*>(Memory::GetPointer(cmd_buff[4]));
 
-    LOG_DEBUG(Service_HTTP, "request url=%s req_type=%u", url_ptr, req_type);
+    LOG_DEBUG(Service_HTTP, "request url=%s request_type=%u", url_ptr, request_type);
     auto context = Common::make_unique<HttpContext>();
 
-    context->req_type = req_type;
+    context->request_type = request_type;
     context->url = std::string(url_ptr, url_len);
     context_map.emplace(next_handle, std::move(context));
 

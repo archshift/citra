@@ -55,7 +55,7 @@ struct HttpContext {
 
     //--- Request data
     std::string url;                  //< URL to the target server.
-    RequestType req_type;             //< Type of request that will be performed
+    RequestType request_type;             //< Type of request that will be performed
     curl_slist* request_hdrs;         //< Buffer for request headers to be sent to the server.
 
     //--- Response data

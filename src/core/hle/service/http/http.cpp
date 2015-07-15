@@ -27,7 +27,7 @@ static int BufWriter(u8 *data, size_t size, size_t nmemb, std::vector<u8>* out_b
 HttpContext::HttpContext() {
     state = RequestState::NOT_STARTED;
     cancel_request = false;
-    req_type = RequestType::NONE;
+    request_type = RequestType::NONE;
     request_hdrs = nullptr;
     response_code = 0;
     content_length = 0.0;
@@ -66,7 +66,7 @@ void MakeRequest(HttpContext* context) {
         std::lock_guard<std::mutex> lock(context->mutex);
 
         res = curl_easy_setopt(connection, CURLOPT_URL, context->url.c_str());
-        res = SetConnectionType(connection, context->req_type);
+        res = SetConnectionType(connection, context->request_type);
         res = curl_easy_setopt(connection, CURLOPT_HTTPHEADER, context->request_hdrs);
     }
 
