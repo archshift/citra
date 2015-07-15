@@ -154,8 +154,8 @@ void ClearInstance() {
 }
 
 void Shutdown() {
-    curl_global_cleanup();
     ClearInstance();
+    curl_global_cleanup();
 }
 
 } // namespace HTTP
