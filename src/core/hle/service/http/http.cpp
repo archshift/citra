@@ -155,5 +155,5 @@ void Shutdown() {
     ClearInstance();
 }
 
-}; // namespace HTTP
+} // namespace HTTP
 } // namespace Service
