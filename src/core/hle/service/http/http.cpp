@@ -28,14 +28,14 @@ HttpContext::HttpContext() {
     state = RequestState::NOT_STARTED;
     cancel_request = false;
     request_type = RequestType::NONE;
-    request_hdrs = nullptr;
+    request_headers = nullptr;
     response_code = 0;
     content_length = 0.0;
     downloaded_size = 0.0;
 }
 
 HttpContext::~HttpContext() {
-    curl_slist_free_all(request_hdrs);
+    curl_slist_free_all(request_headers);
 }
 
 static CURLcode SetConnectionType(CURL* connection, RequestType type) {
@@ -67,7 +67,7 @@ void MakeRequest(HttpContext* context) {
 
         res = curl_easy_setopt(connection, CURLOPT_URL, context->url.c_str());
         res = SetConnectionType(connection, context->request_type);
-        res = curl_easy_setopt(connection, CURLOPT_HTTPHEADER, context->request_hdrs);
+        res = curl_easy_setopt(connection, CURLOPT_HTTPHEADER, context->request_headers);
     }
 
     std::vector<u8> response_hdrs, response_data;

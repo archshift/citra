@@ -182,7 +182,7 @@ static void AddRequestHeader(Service::Interface* self) {
     std::lock_guard<std::mutex> lock(map_it->second->mutex);
     AddRequestHeader(hdr_name.c_str(),
                      hdr_val.c_str(),
-                     &map_it->second->request_hdrs);
+                     &map_it->second->request_headers);
     cmd_buff[1] = RESULT_SUCCESS.raw;
 }
 
