@@ -142,6 +142,9 @@ void Init() {
 void ClearInstance() {
     for (auto& pair : context_map) {
         pair.second->cancel_request = true;
+    }
+
+    for (auto& pair : context_map) {
         if (pair.second->req_thread != nullptr)
             pair.second->req_thread->join();
     }
