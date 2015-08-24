@@ -145,10 +145,12 @@ static void ReceiveData(Service::Interface* self) {
         return;
     }
 
-    std::lock_guard<std::mutex> lock(map_it->second->mutex);
-    const std::vector<u8>& data = map_it->second->response_data;
+    auto context = map_it->second.get();
 
-    //TODO: Check if this should use context->downloaded_size instead of data.size()
+    std::lock_guard<std::mutex> lock(map_it->second->mutex);
+    const std::vector<u8>& data = context->response_data;
+
+    // TODO: Check if this should use context->downloaded_size instead of data.size()
     if (buf_size > data.size()) {
         cmd_buff[1] = 0xD840A02B;
         return;
@@ -157,15 +159,14 @@ static void ReceiveData(Service::Interface* self) {
     if (buf_size < data.size()) {
         long data_size;
 
-        if (map_it->second->current_content_length + buf_size > map_it->second->content_length)
-            data_size = (u32)map_it->second->content_length - map_it->second->current_content_length;
+        if (context->current_content_length + buf_size > context->content_length)
+            data_size = (u32) context->content_length - context->current_content_length;
         else
             data_size = buf_size;
 
-        std::copy(data.begin() + map_it->second->current_content_length, data.begin() + map_it->second->current_content_length + data_size, buffer);
-        map_it->second->current_content_length += data_size;
-    }
-    else{
+        std::copy(data.begin() + context->current_content_length, data.begin() + context->current_content_length + data_size, buffer);
+        context->current_content_length += data_size;
+    } else {
         std::copy(data.begin(), data.end(), buffer);
     }
 
