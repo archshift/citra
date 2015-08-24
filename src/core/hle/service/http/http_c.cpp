@@ -107,7 +107,7 @@ static void GetDownloadSizeState(Service::Interface* self) {
     std::lock_guard<std::mutex> lock(response->mutex);
 
     cmd_buff[1] = RESULT_SUCCESS.raw;
-    cmd_buff[2] = (u32) response->downloaded_size;
+    cmd_buff[2] = (u32)response->current_content_length;
     // TODO: invalid content-length?
     cmd_buff[3] = (u32) response->content_length;
 }
@@ -147,12 +147,28 @@ static void ReceiveData(Service::Interface* self) {
 
     std::lock_guard<std::mutex> lock(map_it->second->mutex);
     const std::vector<u8>& data = map_it->second->response_data;
-    if (buf_size < data.size()) {
+
+    //TODO: Check if this should use context->downloaded_size instead of data.size()
+    if (buf_size > data.size()) {
         cmd_buff[1] = 0xD840A02B;
         return;
     }
 
-    std::copy(data.begin(), data.end(), buffer);
+    if (buf_size < data.size()) {
+        long data_size;
+
+        if (map_it->second->current_content_length + buf_size > map_it->second->content_length)
+            data_size = (u32)map_it->second->content_length - map_it->second->current_content_length;
+        else
+            data_size = buf_size;
+
+        std::copy(data.begin() + map_it->second->current_content_length, data.begin() + map_it->second->current_content_length + data_size, buffer);
+        map_it->second->current_content_length += data_size;
+    }
+    else{
+        std::copy(data.begin(), data.end(), buffer);
+    }
+
     cmd_buff[1] = RESULT_SUCCESS.raw;
 }
 
@@ -221,46 +237,46 @@ static void Finalize(Service::Interface* self) {
 }
 
 const Interface::FunctionInfo FunctionTable[] = {
-    {0x00010044, Initialize,              "Initialize"},
-    {0x00020082, CreateContext,           "CreateContext"},
-    {0x00030040, CloseContext,            "CloseContext"},
-    {0x00040040, CancelConnection,        "CancelConnection"},
-    {0x00050040, GetRequestState,         "GetRequestState"},
-    {0x00060040, GetDownloadSizeState,    "GetDownloadSizeState"},
-    {0x00070040, nullptr,                 "GetRequestError"},
-    {0x00080042, nullptr,                 "InitializeConnectionSession"},
-    {0x00090040, BeginRequest,            "BeginRequest"},
-    {0x000A0040, nullptr,                 "BeginRequestAsync"},
-    {0x000B0082, ReceiveData,             "ReceiveData"},
-    {0x000C0102, nullptr,                 "ReceiveDataTimeout"},
-    {0x000D0146, nullptr,                 "SetProxy"},
-    {0x000E0040, nullptr,                 "SetProxyDefault"},
-    {0x000F00C4, nullptr,                 "SetBasicAuthorization"},
-    {0x00100080, nullptr,                 "SetSocketBufferSize"},
-    {0x001100C4, AddRequestHeader,        "AddRequestHeader"},
-    {0x001200C4, nullptr,                 "AddPostDataAscii"},
-    {0x001300C4, nullptr,                 "AddPostDataBinary"},
-    {0x00140082, nullptr,                 "AddPostDataRaw"},
-    {0x00150080, nullptr,                 "SetPostDataType"},
-    {0x001600C4, nullptr,                 "SendPostDataAscii"},
-    {0x00170144, nullptr,                 "SendPostDataAsciiTimeout"},
-    {0x001800C4, nullptr,                 "SendPostDataBinary"},
-    {0x00190144, nullptr,                 "SendPostDataBinaryTimeout"},
-    {0x001A0082, nullptr,                 "SendPostDataRaw"},
-    {0x001B0102, nullptr,                 "SendPostDataRawTimeout"},
-    {0x001C0080, nullptr,                 "SetPostDataEncoding"},
-    {0x001D0040, nullptr,                 "NotifyFinishSendPostData"},
-    {0x001E00C4, nullptr,                 "GetResponseHeader"},
-    {0x001F0144, nullptr,                 "GetResponseHeaderTimeout"},
-    {0x00200082, nullptr,                 "GetResponseData"},
-    {0x00210102, nullptr,                 "GetResponseDataTimeout"},
-    {0x00220040, GetResponseStatusCode,   "GetResponseStatusCode"},
-    {0x002300C0, nullptr,                 "GetResponseStatusCodeTimeout"},
-    {0x00240082, nullptr,                 "AddTrustedRootCA"},
-    {0x00350186, nullptr,                 "SetDefaultProxy"},
-    {0x00360000, nullptr,                 "ClearDNSCache"},
-    {0x00370080, nullptr,                 "SetKeepAlive"},
-    {0x003800C0, Finalize,                "Finalize"},
+    {0x00010044, Initialize,                  "Initialize"},
+    {0x00020082, CreateContext,               "CreateContext"},
+    {0x00030040, CloseContext,                "CloseContext"},
+    {0x00040040, CancelConnection,            "CancelConnection"},
+    {0x00050040, GetRequestState,             "GetRequestState"},
+    {0x00060040, GetDownloadSizeState,        "GetDownloadSizeState"},
+    {0x00070040, nullptr,                     "GetRequestError"},
+    {0x00080042, nullptr,                     "InitializeConnectionSession"},
+    {0x00090040, BeginRequest,                "BeginRequest"},
+    {0x000A0040, nullptr,                     "BeginRequestAsync"},
+    {0x000B0082, ReceiveData,                 "ReceiveData"},
+    {0x000C0102, nullptr,                     "ReceiveDataTimeout"},
+    {0x000D0146, nullptr,                     "SetProxy"},
+    {0x000E0040, nullptr,                     "SetProxyDefault"},
+    {0x000F00C4, nullptr,                     "SetBasicAuthorization"},
+    {0x00100080, nullptr,                     "SetSocketBufferSize"},
+    {0x001100C4, AddRequestHeader,            "AddRequestHeader"},
+    {0x001200C4, nullptr,                     "AddPostDataAscii"},
+    {0x001300C4, nullptr,                     "AddPostDataBinary"},
+    {0x00140082, nullptr,                     "AddPostDataRaw"},
+    {0x00150080, nullptr,                     "SetPostDataType"},
+    {0x001600C4, nullptr,                     "SendPostDataAscii"},
+    {0x00170144, nullptr,                     "SendPostDataAsciiTimeout"},
+    {0x001800C4, nullptr,                     "SendPostDataBinary"},
+    {0x00190144, nullptr,                     "SendPostDataBinaryTimeout"},
+    {0x001A0082, nullptr,                     "SendPostDataRaw"},
+    {0x001B0102, nullptr,                     "SendPostDataRawTimeout"},
+    {0x001C0080, nullptr,                     "SetPostDataEncoding"},
+    {0x001D0040, nullptr,                     "NotifyFinishSendPostData"},
+    {0x001E00C4, nullptr,                     "GetResponseHeader"},
+    {0x001F0144, nullptr,                     "GetResponseHeaderTimeout"},
+    {0x00200082, nullptr,                     "GetResponseData"},
+    {0x00210102, nullptr,                     "GetResponseDataTimeout"},
+    {0x00220040, GetResponseStatusCode,       "GetResponseStatusCode"},
+    {0x002300C0, nullptr,                     "GetResponseStatusCodeTimeout"},
+    {0x00240082, nullptr,                     "AddTrustedRootCA"},
+    {0x00350186, nullptr,                     "SetDefaultProxy"},
+    {0x00360000, nullptr,                     "ClearDNSCache"},
+    {0x00370080, nullptr,                     "SetKeepAlive"},
+    {0x003800C0, Finalize,                    "Finalize"},
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

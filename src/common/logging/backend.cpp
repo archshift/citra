@@ -44,6 +44,7 @@ static std::shared_ptr<Logger> global_logger;
         SUB(Service, CFG) \
         SUB(Service, DSP) \
         SUB(Service, HID) \
+        SUB(Service, HTTP) \
         SUB(Service, SOC) \
         CLS(HW) \
         SUB(HW, Memory) \
