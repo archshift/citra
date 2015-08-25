@@ -149,7 +149,7 @@ static void ReceiveData(Service::Interface* self) {
     auto context = map_it->second.get();
 
     std::lock_guard<std::mutex> lock(map_it->second->mutex);
-    const std::vector<u8>& data = context->response_data;
+    auto& data = context->response_data;
 
     // TODO: Check if this should use context->downloaded_size instead of data.size()
     if (buf_size > data.size()) {
@@ -215,7 +215,6 @@ static void GetResponseStatusCode(Service::Interface* self) {
         return;
     }
 
-    // TODO: Verify behavior
     while (true) {
         std::lock_guard<std::mutex> lock(map_it->second->mutex);
         if (map_it->second->state == RequestState::READY)
