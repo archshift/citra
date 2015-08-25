@@ -51,7 +51,8 @@ static void CloseContext(Service::Interface* self) {
         return;
     }
 
-    map_it->second->cancel_request = true;
+    map_it->second->cancel_request.store(true);
+
     if (map_it->second->request_thread != nullptr)
         map_it->second->request_thread->join();
 
@@ -70,7 +71,7 @@ static void CancelConnection(Service::Interface* self) {
         cmd_buff[1] = 0xD8E007F7;
         return;
     }
-    map_it->second->cancel_request = true;
+    map_it->second->cancel_request.store(true);
 
     cmd_buff[1] = RESULT_SUCCESS.raw;
 }

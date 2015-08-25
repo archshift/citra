@@ -10,6 +10,7 @@
 #include <thread>
 #include <string>
 #include <unordered_map>
+#include <atomic>
 
 #include "core/hle/result.h"
 
@@ -51,7 +52,7 @@ struct HttpContext {
     //--- Ongoing request management
     RequestState state;               //< API-exposed current state of the HTTP request
     std::unique_ptr<std::thread> request_thread;
-    bool cancel_request;              //< True if the request's thread should be canceled ASAP
+    std::atomic<bool> cancel_request;              //< True if the request's thread should be canceled ASAP
 
     //--- Request data
     std::string url;                  //< URL to the target server.

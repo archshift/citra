@@ -26,7 +26,7 @@ static int BufWriter(u8 *data, size_t size, size_t nmemb, std::vector<u8>* out_b
 
 HttpContext::HttpContext() {
     state = RequestState::NOT_STARTED;
-    cancel_request = false;
+    cancel_request.store(false);
     request_type = RequestType::None;
     request_headers = nullptr;
     response_code = 0;
@@ -104,7 +104,7 @@ void MakeRequest(HttpContext* context) {
 
         {
             std::lock_guard<std::mutex> lock(context->mutex);
-            if (context->cancel_request)
+            if (context->cancel_request.load())
                 break;
         }
 
@@ -142,7 +142,7 @@ void Init() {
 
 void ClearInstance() {
     for (auto& pair : context_map) {
-        pair.second->cancel_request = true;
+        pair.second->cancel_request.store(true);
     }
 
     for (auto& pair : context_map) {
