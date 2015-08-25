@@ -10,6 +10,7 @@
 #include <thread>
 #include <string>
 #include <unordered_map>
+#include <atomic>
 
 #include "core/hle/result.h"
 
@@ -22,14 +23,14 @@ typedef u32 ContextHandle;
 
 /// HTTP operation that will be performed by the request (API-exposed).
 enum class RequestType : u32 {
-    NONE     = 0,
-    GET      = 1,
-    POST     = 2,
-    HEAD     = 3,
-    PUT      = 4,
-    DELETE   = 5,
-    POST_ALT = 6,
-    PUT_ALT  = 7
+    None     = 0,
+    Get      = 1,
+    Post     = 2,
+    Head     = 3,
+    Put      = 4,
+    Delete   = 5,
+    Post_Alt = 6,
+    Put_Alt  = 7
 };
 
 /// Current state of the HTTP request (API-exposed).
@@ -51,7 +52,7 @@ struct HttpContext {
     //--- Ongoing request management
     RequestState state;               //< API-exposed current state of the HTTP request
     std::unique_ptr<std::thread> request_thread;
-    bool cancel_request;              //< True if the request's thread should be canceled ASAP
+    std::atomic<bool> cancel_request;              //< True if the request's thread should be canceled ASAP
 
     //--- Request data
     std::string url;                  //< URL to the target server.
@@ -64,6 +65,8 @@ struct HttpContext {
     long response_code;               //< The three-digit HTTP response code returned by the server.
     double content_length;            //< The total size in bytes that will be downloaded this request (cURL returns a double for this).
     double downloaded_size;           //< The amount in bytes that has been downloaded so far (cURL returns a double for this).
+
+    long current_content_length;      //< The amount in bytes that has been read out of the http response_data
 
     HttpContext();
     ~HttpContext();

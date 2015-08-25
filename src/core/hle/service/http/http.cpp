@@ -26,12 +26,13 @@ static int BufWriter(u8 *data, size_t size, size_t nmemb, std::vector<u8>* out_b
 
 HttpContext::HttpContext() {
     state = RequestState::NOT_STARTED;
-    cancel_request = false;
-    request_type = RequestType::NONE;
+    cancel_request.store(false);
+    request_type = RequestType::None;
     request_headers = nullptr;
     response_code = 0;
     content_length = 0.0;
     downloaded_size = 0.0;
+    current_content_length = 0;
 }
 
 HttpContext::~HttpContext() {
@@ -40,17 +41,17 @@ HttpContext::~HttpContext() {
 
 static CURLcode SetConnectionType(CURL* connection, RequestType type) {
     switch (type) {
-    case RequestType::GET:
+    case RequestType::Get:
         return curl_easy_setopt(connection, CURLOPT_HTTPGET, 1);
-    case RequestType::POST:
-    case RequestType::POST_ALT:
+    case RequestType::Post:
+    case RequestType::Post_Alt:
         return curl_easy_setopt(connection, CURLOPT_POST, 1);
-    case RequestType::PUT:
-    case RequestType::PUT_ALT:
+    case RequestType::Put:
+    case RequestType::Put_Alt:
         return curl_easy_setopt(connection, CURLOPT_UPLOAD, 1);
-    case RequestType::DELETE:
+    case RequestType::Delete:
         break; // TODO
-    case RequestType::HEAD:
+    case RequestType::Head:
         return curl_easy_setopt(connection, CURLOPT_NOBODY, 1);
     }
 }
@@ -103,7 +104,7 @@ void MakeRequest(HttpContext* context) {
 
         {
             std::lock_guard<std::mutex> lock(context->mutex);
-            if (context->cancel_request)
+            if (context->cancel_request.load())
                 break;
         }
 
@@ -118,7 +119,7 @@ void MakeRequest(HttpContext* context) {
         res = curl_easy_getinfo(connection, CURLINFO_RESPONSE_CODE, &context->response_code);
         res = curl_easy_getinfo(connection, CURLINFO_SIZE_DOWNLOAD, &context->downloaded_size);
         res = curl_easy_getinfo(connection, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &context->content_length);
-
+        context->current_content_length = 0;
         context->state = RequestState::READY;
     }
 
@@ -141,7 +142,7 @@ void Init() {
 
 void ClearInstance() {
     for (auto& pair : context_map) {
-        pair.second->cancel_request = true;
+        pair.second->cancel_request.store(true);
     }
 
     for (auto& pair : context_map) {
