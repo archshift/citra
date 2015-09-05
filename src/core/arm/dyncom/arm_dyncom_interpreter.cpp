@@ -3816,6 +3816,11 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
 
     #define CurrentModeHasSPSR (cpu->Mode != SYSTEM32MODE) && (cpu->Mode != USER32MODE)
     #define PC (cpu->Reg[15])
+    #define PUSH_STACK_TRACE \
+            cpu->stack_trace.emplace_back(cpu->Reg[15])
+    #define UPDATE_STACK_TRACE \
+            if (cpu->stack_trace.size() > 0 && cpu->stack_trace.back() == PC - cpu->GetInstructionSize()) \
+                cpu->stack_trace.pop_back()
 
     // GCC and Clang have a C++ extension to support a lookup table of labels. Otherwise, fallback
     // to a clunky switch statement.
@@ -3866,6 +3871,8 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
             cpu->Reg[15] &= 0xfffffffe;
         else
             cpu->Reg[15] &= 0xfffffffc;
+
+        UPDATE_STACK_TRACE;
 
         // Find the cached instruction cream, otherwise translate it...
         auto itr = cpu->instruction_cache.find(cpu->Reg[15]);
@@ -3993,6 +4000,7 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
         if ((inst_base->cond == ConditionCode::AL) || CondPassed(cpu, inst_base->cond)) {
             bbl_inst *inst_cream = (bbl_inst *)inst_base->component;
             if (inst_cream->L) {
+                PUSH_STACK_TRACE;
                 LINK_RTN_ADDR;
             }
             SET_PC;
@@ -4049,6 +4057,8 @@ unsigned InterpreterMainLoop(ARMul_State* cpu) {
     {
         blx_inst *inst_cream = (blx_inst *)inst_base->component;
         if ((inst_base->cond == ConditionCode::AL) || CondPassed(cpu, inst_base->cond)) {
+            PUSH_STACK_TRACE;
+
             unsigned int inst = inst_cream->inst;
             if (BITS(inst, 20, 27) == 0x12 && BITS(inst, 4, 7) == 0x3) {
                 cpu->Reg[14] = (cpu->Reg[15] + cpu->GetInstructionSize());

@@ -33,6 +33,7 @@ public:
     void SetCPSR(u32 cpsr) override;
     u32 GetCP15Register(CP15Register reg) override;
     void SetCP15Register(CP15Register reg, u32 value) override;
+    std::vector<u32> GetStackTrace() const override;
 
     void AddTicks(u64 ticks) override;
 

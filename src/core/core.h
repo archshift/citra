@@ -5,6 +5,8 @@
 #pragma once
 
 #include <memory>
+#include <vector>
+
 #include "common/common_types.h"
 
 class ARM_Interface;
@@ -22,6 +24,8 @@ struct ThreadContext {
     u32 fpu_registers[64];
     u32 fpscr;
     u32 fpexc;
+
+    std::vector<u32> stack_trace;
 };
 
 extern std::unique_ptr<ARM_Interface> g_app_core; ///< ARM11 application core

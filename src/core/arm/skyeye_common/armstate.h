@@ -18,6 +18,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 #include <unordered_map>
 
 #include "common/common_types.h"
@@ -239,6 +240,7 @@ public:
     // TODO(bunnei): Move this cache to a better place - it should be per codeset (likely per
     // process for our purposes), not per ARMul_State (which tracks CPU core state).
     std::unordered_map<u32, int> instruction_cache;
+    std::vector<u32> stack_trace;
 
 private:
     void ResetMPCoreCP15Registers();

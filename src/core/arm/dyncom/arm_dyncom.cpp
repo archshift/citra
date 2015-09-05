@@ -72,6 +72,10 @@ void ARM_DynCom::SetCP15Register(CP15Register reg, u32 value) {
     state->CP15[reg] = value;
 }
 
+std::vector<u32> ARM_DynCom::GetStackTrace() const {
+    return state->stack_trace;
+}
+
 void ARM_DynCom::AddTicks(u64 ticks) {
     down_count -= ticks;
     if (down_count < 0)
@@ -89,12 +93,15 @@ void ARM_DynCom::ExecuteInstructions(int num_instructions) {
 }
 
 void ARM_DynCom::ResetContext(Core::ThreadContext& context, u32 stack_top, u32 entry_point, u32 arg) {
-    memset(&context, 0, sizeof(Core::ThreadContext));
+    context = Core::ThreadContext();
 
     context.cpu_registers[0] = arg;
     context.pc = entry_point;
     context.sp = stack_top;
     context.cpsr = 0x1F; // Usermode
+
+    context.stack_trace.clear();
+    context.stack_trace.reserve(128);
 }
 
 void ARM_DynCom::SaveContext(Core::ThreadContext& ctx) {
@@ -108,6 +115,8 @@ void ARM_DynCom::SaveContext(Core::ThreadContext& ctx) {
 
     ctx.fpscr = state->VFP[1];
     ctx.fpexc = state->VFP[2];
+
+    ctx.stack_trace = state->stack_trace;
 }
 
 void ARM_DynCom::LoadContext(const Core::ThreadContext& ctx) {
@@ -121,6 +130,8 @@ void ARM_DynCom::LoadContext(const Core::ThreadContext& ctx) {
 
     state->VFP[1] = ctx.fpscr;
     state->VFP[2] = ctx.fpexc;
+
+    state->stack_trace = ctx.stack_trace;
 }
 
 void ARM_DynCom::PrepareReschedule() {

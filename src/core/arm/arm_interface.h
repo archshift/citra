@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "common/common_types.h"
 #include "core/arm/skyeye_common/arm_regformat.h"
 
@@ -110,6 +112,8 @@ public:
      * @param value The value to store into the CP15 register.
      */
     virtual void SetCP15Register(CP15Register reg, u32 value) = 0;
+
+    virtual std::vector<u32> GetStackTrace() const = 0;
 
     /**
      * Advance the CPU core by the specified number of ticks (e.g. to simulate CPU execution time)
