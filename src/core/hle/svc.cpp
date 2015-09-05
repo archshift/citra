@@ -411,6 +411,12 @@ static void Break(u8 break_reason) {
     default: reason_str = "UNKNOWN"; break;
     }
     LOG_CRITICAL(Debug_Emulated, "Break reason: %s", reason_str.c_str());
+
+    std::vector<u32> stack_trace = Core::g_app_core->GetStackTrace();
+    for (int i = 0; i < stack_trace.size(); i++) {
+        // Mimic GDB, print stack traces with highest-level procedures displayed first
+        LOG_CRITICAL(Debug_Emulated, "  #%d: 0x%08X", i, stack_trace[stack_trace.size() - 1 - i]);
+    }
 }
 
 /// Used to output a message on a debug hardware unit - does nothing on a retail unit
