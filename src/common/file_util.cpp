@@ -27,9 +27,6 @@
     #define fstat64 _fstat64
     #define fileno _fileno
 #else
-    #ifdef __APPLE__
-        #include <sys/param.h>
-    #endif
     #include <cctype>
     #include <cerrno>
     #include <cstdlib>
@@ -37,9 +34,11 @@
     #include <dirent.h>
     #include <pwd.h>
     #include <unistd.h>
+    #include <sys/statvfs.h>
 #endif
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
+    #include <sys/param.h>
     #include <CoreFoundation/CFString.h>
     #include <CoreFoundation/CFURL.h>
     #include <CoreFoundation/CFBundle.h>
@@ -402,6 +401,22 @@ u64 GetSize(FILE *f)
         return 0;
     }
     return size;
+}
+
+u64 GetFreeBytes(const std::string& path)
+{
+#ifdef _WIN32
+    ULARGE_INTEGER free_bytes = {};
+    if (::GetDiskFreeSpaceEx(path.c_str(), &free_bytes, nullptr, nullptr)) {
+        return free_bytes.QuadPart;
+    }
+#else
+    struct statvfs fs_info = {};
+    if (statvfs(path.c_str(), &fs_info) == 0) {
+        return (u64)(fs_info.f_bavail * fs_info.f_frsize);
+    }
+#endif
+    LOG_ERROR(Common_Filesystem, "Query failed: %s %s", path.c_str(), GetLastErrorMsg());
 }
 
 // creates an empty file filename, returns true on success

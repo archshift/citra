@@ -75,6 +75,13 @@ u64 GetSize(const int fd);
 // Overloaded GetSize, accepts FILE*
 u64 GetSize(FILE *f);
 
+/**
+ * Gets free space within a drive
+ * @param path A directory within the drive
+ * @return The number of free bytes in drive
+ */
+u64 GetFreeBytes(const std::string& path);
+
 // Returns true if successful, or path already exists.
 bool CreateDir(const std::string &filename);
 
